@@ -1,0 +1,81 @@
+# Research Topics Configuration
+#
+# This file defines the scientific topics the agent will scan for on arXiv.
+# Edit this file to change the scope of the research without touching any code.
+#
+# Schema:
+#   topics:
+#     - name: <human-readable topic name>
+#       keywords:          # list of keywords used in full-text search
+#         - "<keyword>"
+#       arxiv_categories:  # optional arXiv category codes (e.g. cs.AI, stat.ML)
+#         - "<category>"
+#       max_results: <int> # max papers to fetch per topic per run (default: 20)
+#       abstract_filter: "<natural language criterion>"
+#         # Used ONLY when running with --advanced-filter.
+#         # The LLM will classify each paper abstract against this criterion
+#         # and discard papers that do not match.
+
+topics:
+  - name: "Causal AI"
+    keywords:
+      - "causal artificial intelligence"
+      - "causal machine learning"
+      - "causal representation learning"
+      - "causal generative model"
+    arxiv_categories:
+      - "cs.AI"
+      - "cs.LG"
+    max_results: 20
+    abstract_filter: >
+      The paper must be primarily about causal AI or causal machine learning methods,
+      including causal representation learning, or causal generative models.
+      Papers that merely mention causality in passing are NOT relevant.
+
+  # - name: "Causal Inference"
+  #  keywords:
+  #    - "causal inference"
+  #    - "do-calculus"
+  #    - "structural causal model"
+  #    - "counterfactual reasoning"
+  #    - "interventional distribution"
+  #  arxiv_categories:
+  #    - "stat.ML"
+  #    - "cs.AI"
+  #  max_results: 20
+  #  abstract_filter: >
+  #    The paper must focus on causal inference methodology, such as structural causal models,
+  #    do-calculus, counterfactual reasoning, or interventional estimation.
+  #    Applied studies that use standard statistics without causal framing are NOT relevant.
+
+  # - name: "Reinforcement Learning"
+  #  keywords:
+  #    - "reinforcement learning"
+  #    - "deep reinforcement learning"
+  #    - "policy gradient"
+  #    - "model-based reinforcement learning"
+  #    - "multi-agent reinforcement learning"
+  #  arxiv_categories:
+  #    - "cs.LG"
+  #    - "cs.AI"
+  #  max_results: 20
+  #  abstract_filter: >
+  #    The paper must present a novel reinforcement learning algorithm, theoretical analysis,
+  #    or application with a clear RL contribution (e.g., policy learning, reward design,
+  #    exploration strategy, or environment modelling). Papers that only fine-tune LLMs
+  #    with RLHF without algorithmic novelty are NOT relevant.
+
+  - name: "Causal Reinforcement Learning"
+    keywords:
+      - "causal reinforcement learning"
+      - "causal policy"
+      - "causal reward"
+      - "causal world model"
+    arxiv_categories:
+      - "cs.LG"
+      - "cs.AI"
+    max_results: 15
+    abstract_filter: >
+      The paper must explicitly combine causal reasoning with reinforcement learning,
+      for example causal world models, causal policy learning, causal credit assignment,
+      or using interventions/counterfactuals to improve RL agents.

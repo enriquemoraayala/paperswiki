@@ -1,0 +1,100 @@
+{
+  "title": "ArXiv Searcher",
+  "uid": "arxivsearcher",
+  "schemaVersion": 38,
+  "version": 2,
+  "refresh": "10s",
+  "time": { "from": "now-1h", "to": "now" },
+  "panels": [
+    {
+      "id": 1, "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "type": "stat", "title": "Chat Requests (1h)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "sum(increase(obstester_chat_invocations_total{service_name=\"arxivsearcher-backend\"}[1h]))", "legendFormat": "requests" }]
+    },
+    {
+      "id": 2, "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "type": "stat", "title": "Chat Errors (1h)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] } } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "sum(increase(obstester_chat_errors_total{service_name=\"arxivsearcher-backend\"}[1h]))", "legendFormat": "errors" }]
+    },
+    {
+      "id": 3, "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "type": "stat", "title": "MCP Tool Calls (1h)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "purple", "value": null }] } } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "sum(increase(obstester_mcp_tool_calls_total{service_name=\"arxivsearcher-backend\"}[1h]))", "legendFormat": "tool calls" }]
+    },
+    {
+      "id": 4, "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "type": "stat", "title": "ArXiv Searches (1h)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "orange", "value": null }] } } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "sum(increase(obstester_arxiv_search_calls_total{service_name=\"arxivsearcher-mcp\"}[1h]))", "legendFormat": "searches" }]
+    },
+    {
+      "id": 5, "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "type": "stat", "title": "ArXiv Downloads (1h)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "background" },
+      "targets": [{ "expr": "sum(increase(obstester_arxiv_download_calls_total{service_name=\"arxivsearcher-mcp\"}[1h]))", "legendFormat": "downloads" }]
+    },
+    {
+      "id": 6, "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "type": "timeseries", "title": "LLM Call Duration — p50 / p95 / p99",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "lineWidth": 2 } } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(obstester_gen_ai_client_operation_duration_seconds_bucket{service_name=\"arxivsearcher-backend\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(obstester_gen_ai_client_operation_duration_seconds_bucket{service_name=\"arxivsearcher-backend\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(obstester_gen_ai_client_operation_duration_seconds_bucket{service_name=\"arxivsearcher-backend\"}[5m])) by (le))", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "id": 7, "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "type": "timeseries", "title": "Token Usage — input / output por minuto",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2 } } },
+      "targets": [
+        { "expr": "sum(rate(obstester_gen_ai_client_token_usage_input_total{service_name=\"arxivsearcher-backend\"}[1m])) * 60", "legendFormat": "input tokens/min" },
+        { "expr": "sum(rate(obstester_gen_ai_client_token_usage_output_total{service_name=\"arxivsearcher-backend\"}[1m])) * 60", "legendFormat": "output tokens/min" }
+      ]
+    },
+    {
+      "id": 8, "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "type": "timeseries", "title": "MCP Tool Duration por herramienta (p50)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "lineWidth": 2 } } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(obstester_mcp_tool_duration_seconds_bucket{service_name=\"arxivsearcher-backend\"}[5m])) by (le, tool_name))", "legendFormat": "{{tool_name}} p50" }
+      ]
+    },
+    {
+      "id": 9, "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "type": "timeseries", "title": "ArXiv Search Duration — p50 / p95",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "s", "custom": { "lineWidth": 2 } } },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(obstester_arxiv_search_duration_seconds_bucket{service_name=\"arxivsearcher-mcp\"}[5m])) by (le))", "legendFormat": "search p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(obstester_arxiv_search_duration_seconds_bucket{service_name=\"arxivsearcher-mcp\"}[5m])) by (le))", "legendFormat": "search p95" }
+      ]
+    },
+    {
+      "id": 10, "gridPos": { "x": 0, "y": 20, "w": 24, "h": 8 },
+      "type": "timeseries", "title": "Chat Request Rate y Error Rate",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": { "defaults": { "unit": "reqps", "custom": { "lineWidth": 2 } } },
+      "targets": [
+        { "expr": "sum(rate(obstester_chat_invocations_total{service_name=\"arxivsearcher-backend\"}[1m]))", "legendFormat": "requests/s" },
+        { "expr": "sum(rate(obstester_chat_errors_total{service_name=\"arxivsearcher-backend\"}[1m]))", "legendFormat": "errors/s" }
+      ]
+    }
+  ]
+}

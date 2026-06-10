@@ -1,0 +1,29 @@
+[project]
+name = "paperswiki"
+version = "0.1.0"
+description = "ArXiv research platform — scan, summarise, browse and deep-analyse papers via MCP"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    # LLM providers
+    "anthropic>=0.25.0",
+    "openai>=1.0",
+    # Config & utils
+    "pyyaml>=6.0",
+    "python-dotenv>=1.0",
+    "requests>=2.31",
+    # MCP client & server
+    "mcp[cli]>=1.27.0",
+    "arxiv>=3.0.0",
+    "certifi>=2026.4.22",
+    "httpx>=0.28.1",
+    # Viewer
+    "markdown>=3.5",
+    # Deep Research agent
+    "pypdf>=3.0",
+    # OpenTelemetry (used by mcp_server.py)
+    "opentelemetry-api==1.24.0",
+    "opentelemetry-sdk==1.24.0",
+    "opentelemetry-exporter-otlp-proto-grpc==1.24.0",
+    "opentelemetry-semantic-conventions==0.45b0",
+]

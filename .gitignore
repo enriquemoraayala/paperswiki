@@ -203,6 +203,12 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
+# paperswiki runtime data
+summaries/
+logs/
+viewer_state.json
+.seen_papers.json
+
 # Ruff stuff:
 .ruff_cache/
 

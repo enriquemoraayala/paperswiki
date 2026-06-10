@@ -1,0 +1,103 @@
+name: paperswiki-obs
+
+# ──────────────────────────────────────────────────────────────────────────────
+# STANDALONE OBSERVABILITY STACK
+# Only start this compose if you don't already have an OTLP stack running.
+#
+# If you have another OTEL stack running on localhost:4317 you don't need this:
+#   - Jaeger   → http://localhost:16686
+#   - Prometheus → http://localhost:9090
+#   - Loki     → http://localhost:3100
+#   - Grafana  → http://localhost:3000  (admin/admin)
+#
+# Usage:
+#   docker compose up -d
+# ──────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── OpenTelemetry Collector ──────────────────────────────────────────────────
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.96.0
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - "4317:4317"     # OTLP gRPC  (clients → collector)
+      - "4318:4318"     # OTLP HTTP  (clients → collector)
+      - "8889:8889"     # Prometheus scrape endpoint
+      - "13133:13133"   # Health check
+    depends_on:
+      - jaeger
+      - loki
+    networks:
+      - paperswiki
+    restart: unless-stopped
+
+  # ── Jaeger all-in-one ────────────────────────────────────────────────────────
+  jaeger:
+    image: jaegertracing/all-in-one:1.55
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - SPAN_STORAGE_TYPE=memory
+      - MEMORY_MAX_TRACES=50000
+    ports:
+      - "16686:16686"   # Jaeger UI
+    networks:
+      - paperswiki
+    restart: unless-stopped
+
+  # ── Prometheus ───────────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.retention.time=7d"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"     # Prometheus UI
+    networks:
+      - paperswiki
+    restart: unless-stopped
+
+  # ── Loki (log aggregation) ────────────────────────────────────────────────────
+  loki:
+    image: grafana/loki:2.9.4
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+    networks:
+      - paperswiki
+    restart: unless-stopped
+
+  # ── Grafana ──────────────────────────────────────────────────────────────────
+  grafana:
+    image: grafana/grafana:10.3.3
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+      - GF_EXPLORE_ENABLED=true
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3000:3000"     # Grafana UI  (admin / admin)
+    depends_on:
+      - prometheus
+      - jaeger
+      - loki
+    networks:
+      - paperswiki
+    restart: unless-stopped
+
+volumes:
+  grafana-data:
+
+networks:
+  paperswiki:
+    driver: bridge

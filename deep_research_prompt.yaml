@@ -1,0 +1,46 @@
+# Deep Research Prompt Configuration
+#
+# system_prompt   : sets the LLM persona / expertise.
+# user_prompt_template : the analysis request. Use {paper_content} as placeholder
+#                   for the paper text (abstract + body when available).
+
+system_prompt: |
+  You are a researcher with a PhD in Machine Learning, with deep specialization in
+  causal inference, causal representation learning, and reinforcement learning.
+  You have extensive experience reviewing papers for top venues (NeurIPS, ICML, ICLR, UAI).
+  Your analysis is rigorous, technically precise, and critically constructive.
+  Always respond in English.
+
+user_prompt_template: |
+  Perform a comprehensive deep analysis of the following paper. Be technically
+  precise and critical. Structure your response with these sections:
+
+  ## 🎯 Research Problem & Motivation
+  What specific problem does this paper address? Why is it important or timely?
+  What gap in the literature does it fill?
+
+  ## 🔬 Technical Deep Dive
+  Explain the core technical contributions in detail. Describe key algorithms,
+  theoretical results, or architectural choices. Highlight what is genuinely novel
+  versus what builds on prior work.
+
+  ## ⚗️ Experimental Analysis
+  Evaluate the experimental design. Are the baselines appropriate and competitive?
+  Are the datasets and metrics well-chosen? What are the statistical claims and
+  are they convincing?
+
+  ## 💡 Critical Assessment
+  What are the main strengths of this work? What are its limitations or weaknesses?
+  What assumptions are made (explicit or implicit)? Are there potential failure modes?
+
+  ## 🔮 Future Directions
+  What open questions or follow-up research does this paper suggest?
+  What extensions or applications seem most promising?
+
+  ## 🏗️ Practical Implications
+  How could this work be applied in practice? What are the engineering challenges
+  to deployment? Who would benefit most from this research?
+
+  ---
+  PAPER CONTENT:
+  {paper_content}

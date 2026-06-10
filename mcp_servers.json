@@ -1,0 +1,16 @@
+[
+  {
+    "name": "arxiv",
+    "type": "local",
+    "command": "uv",
+    "args": [
+      "run",
+      "python",
+      "mcp_server.py"
+    ],
+    "cwd": null,
+    "url": null,
+    "id": "238aca89-4fed-4cf6-b2ef-2f8258408738",
+    "active": true
+  }
+]
